@@ -72,6 +72,7 @@ $(document).ready(function(){
   document.getElementById("open").onchange = function(){
     filterOpen(this.value);
   }
+
 });
 
 function filterSector(ntype) {
@@ -80,9 +81,8 @@ function filterSector(ntype) {
     draw(curdata);
   }else{
     var filtered = curdata.filter(function(d){
-      return d.stat == ntype;
+      return d.sector == ntype;
     });
-    curdata = filtered;
     d3.selectAll('.axis').remove();
     draw(filtered);
   }
@@ -96,7 +96,6 @@ function filterOpen(ntype){
     var filtered = curdata.filter(function(d){
       return d.stat == ntype;
     });
-    curdata = filtered;
     d3.selectAll('.axis').remove();
     draw(filtered);
   }
@@ -106,7 +105,7 @@ function draw(mydata) { //draw the circiles initially and on each interaction wi
 
 //for scatter plot
   var xMin = d3.min(mydata, function(d){return d.app_year});
-  var xMax = d3.max(mydata, function(d){return d.app_year});
+  var xMax = d3.max(mydata, function(d){return d.end_year});
   var yMin = d3.min(mydata, function(d){return d.budget});
   var yMax = d3.max(mydata, function(d){return d.budget});
 
