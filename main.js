@@ -209,29 +209,30 @@ plot.append("g")
      .style("fill", function(d) { return col(d.sector); })
      .style("opacity", 0.5);
 
-
+    //sum values to be used for bar chart
+    //sum budget totals by sector of instituation
     var nested_sums = d3.nest()
       .key(function(d){ return d.sector; })
       .rollup(function(grant){ return d3.sum(grant, function(d){return d.budget})})
       .entries(mydata);
-    console.log(nested_sums);
+
+  //max for barchart    
   var sumMax = d3.max(nested_sums, function(d){ return d.value});
-  console.log(sumMax);
-  //circle
-  //circle
 
 
-  //for barchart
+  //for barchart, x axis
   var xbar = d3.scaleOrdinal()
     .domain(["Government","Hospital","Research","University","Other"])
     .range([0,(w-30)/4,(w-30)/2,(3*w-30)/4,w-30]);
-//console.log(sumMax);
+
+    //y axis for bar chart
   var ybar = d3.scaleLinear()
     .domain([0,sumMax])
     .range([h,0]);
 
+//bars for barchart
   var bars = barchart.selectAll("rect")
-    .data(nested_sums);
+    .data(nested_sums); //use budget sums for the sector
 
     bars.attr("x", function(d) { return xbar(d.key);  })
     .attr("y", function(d){ return ybar(d.value); })
@@ -249,10 +250,11 @@ plot.append("g")
     .attr("height",function(d){ return h-ybar(d.value); })
     .style("fill",function(d) { return col(d.key); });
   
+  //add tooltip to barchart to give sector and value of sum.
   bars.on("mouseover",function(d){
       tooltip.transition()
         .style("opacity",.9);
-        tooltip.html("Sector: "+d.key+"<br />Total Budget: $"+d.value+"<br />Sector: "+d.sect)
+        tooltip.html("Sector: "+d.key+"<br />Total Budget: $"+d.value)
           .style("left",(d3.event.pageX+5)+"px")
           .style("top",(d3.event.pageY-28)+"px");
       })
@@ -261,12 +263,14 @@ plot.append("g")
           .style("opacity",0);
       });
 
+//create x axis for bar chart 
 var barxAxis = d3.axisBottom()
     .scale(xbar);
-
+//y axis
   var baryAxis = d3.axisLeft()
     .scale(ybar);
 
+//add axis to barchart
 barchart.append("g")
   .attr("class","x axis")
   .attr("transform", "translate(0," + h + ")")
@@ -290,6 +294,7 @@ barchart.append("g")
         .style("text-anchor", "end")
         .text("Total Budget");
 
+//move data points to start year of project
   d3.select("#start").on("click",(function(){
     yearplot.text("Research Project Budget by Start Year");
     var circles = plot.selectAll("circle");
@@ -297,6 +302,8 @@ barchart.append("g")
       .duration(3000)
       .attr("cx",function(d){ return x(d.start_year); });
     }));
+
+  //move data points to end year of project
   d3.select("#end").on("click",function(){
     yearplot.text("Research Project Budget by End Year");
     var circles = plot.selectAll("circle");
@@ -305,6 +312,7 @@ barchart.append("g")
       .attr("cx",function(d){ return x(d.end_year); });
   });
 
+//change to application year of project
   d3.select("#app").on("click",function(){
     yearplot.text("Research Project Budget by Application Year");
     var circles = plot.selectAll("circle");
